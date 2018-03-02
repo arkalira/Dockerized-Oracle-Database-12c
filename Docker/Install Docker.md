@@ -92,7 +92,7 @@ docker swarm  join-token -q  manager
 	To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
 ```
 
-#### Unimos como managers el resto de nodos
+#### Add like managers the rest of nodes
 
 ```
 docker swarm join \
