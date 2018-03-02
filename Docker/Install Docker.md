@@ -1,11 +1,11 @@
-# Install Docker in Debian 9 servers
-## Update System
+# Install Docker in Debian 9
+## Update and install software
 ```
 apt-get install -y vim mc uml-utilities ntp qemu-guest-agent \
 htop sudo curl git-core etckeeper molly-guard apt-transport-https ca-certificates \
 bridge-utils gettext-base jq -y < /dev/null
 ```
-### Oh-my-zsh
+### Install Oh-my-zsh
 
 ```
 apt-get install zsh -y < /dev/null
@@ -17,7 +17,7 @@ echo 'export VTYSH_PAGER=more' >> /etc/zsh/zshenv
 source .zshrc
 ```
 
-### Repo y kernel de backports
+### Add backports repo and install kernel
 
 ```
 echo "deb http://ftp.debian.org/debian jessie-backports main"  >> /etc/apt/sources.list.d/debian-backports.list
@@ -25,14 +25,14 @@ apt update
 apt install linux-image-amd64 linux-headers- -t jessie-backports -y < /dev/null
 ```
 
-### Quitamos Kernel viejo
+### Uninstall old kernel
 
 ```
 apt remove --purge $(dpkg --list | grep linux-image-3 | cut -d " " -f 3) -y
 shutdown -r now
 ```
 
-### Tunning sistema
+### System tunning
 
 ```
 cat > /etc/sysctl.d/local.conf << EOL
@@ -51,7 +51,7 @@ EOL
 ```
 
 ## Install Docker
-### Sysdig para monitorización
+### Sysdig for monitoring
 
 ```
 curl -s https://s3.amazonaws.com/download.draios.com/DRAIOS-GPG-KEY.public | apt-key add -
@@ -63,7 +63,7 @@ echo "sysdig-probe" >> /etc/modules-load.d/modules.conf
 modprobe sysdig-probe
 ```
 
-### Instalamos el engine
+### Install engine
 
 ```
 apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
@@ -72,17 +72,14 @@ apt-get update && apt-get install -y docker-engine
 ```
 
 ### Cluster docker
-
--- Si tenemos varios nodos, creamos cluster.
-
-#### En master01
-#### Creamos el cluster en master01
+#### Create cluster in master01
 
 ```
 docker swarm init --advertise-addr IP.ADDR.OF.MASTER01
 docker swarm  join-token -q  manager
 ```
-#### Anotamos token de manager
+
+#### Manager token
 
 ```
 	Swarm initialized: current node (q5lwwzmgiysf6p7710gdlv09o) is now a manager.
@@ -103,10 +100,12 @@ docker swarm join \
     IP.ADDR.OF.MASTER01:2377
 ```
 
-#### Preparamos el kernel
+#### Prepare kernel for cgroups
 
 ```
 sed -ri s/quiet/quiet\ cgroup_enable\=memory\ swapaccount\=1/g /etc/default/grub
 update-grub
 reboot
 ```
+
+## Next: Kubernetes install in swarm cluster!
