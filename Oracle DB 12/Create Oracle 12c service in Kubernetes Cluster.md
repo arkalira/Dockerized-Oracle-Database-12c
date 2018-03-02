@@ -277,7 +277,7 @@ kubectl scale rc oradb --replicas=3
 ```
 
 The Pod replicas get scaled. Subsequently list the Pods.
-``
+```
 kubectl get pods
 ```
 Three replicas of the Pod get listed. The preceding command may have to be run multiple times if required, to list the new Pod replica as running and ready.
