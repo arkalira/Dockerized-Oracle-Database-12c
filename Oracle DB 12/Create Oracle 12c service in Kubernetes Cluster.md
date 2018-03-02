@@ -170,11 +170,9 @@ The single Pod oradb gets listed. The preceding command may have to be run multi
 - READY->1/1.
 
 Describe the Pod.
-
 ```
 kubectl describe pod oradb
 ```
-
 The Pod description gets listed.
 
 ### Creating a Service
@@ -321,98 +319,43 @@ Start SQL*Plus with the **sqlplus /nolog** command. The /nolog option does not e
 
 ## Connecting to Database
 
-
 Run the following command to connect with Oracle database instance as user SYS role SYSDBA.
-
-
-
+```
 CONNECT SYS AS SYSDBA
-
-
-
+```
 Specify the Password as “oracle” when prompted. A connection gets established.
 
-
-
-
-
-
-
-
-
-Creating a User
-
-
+- Creating a User
 Create a user called OE and grant CONNECT and RESOURCE roles to the user.
-
-
-
+```
 CREATE USER OE QUOTA UNLIMITED ON SYSTEM IDENTIFIED BY OE;
-
 GRANT CONNECT, RESOURCE TO OE;
-
-
-
+```
 The OE user gets created and the roles get granted.
 
-
-
-
-
-
-
-Creating a Database Table
-
+- Creating a Database Table
 
 Create a database table called OE.Catalog with the following SQL statement.
-
-
-
+```
 CREATE TABLE OE.Catalog(CatalogId INTEGER PRIMARY KEY,Journal VARCHAR2(25),Publisher VARCHAR2(25),Edition VARCHAR2(25),Title VARCHAR2(45),Author VARCHAR2(25));
-
-
+```
 
 Add a row of data to the OE.Catalog table.
-
-
-
+```
 INSERT INTO OE.Catalog VALUES('1','Oracle Magazine','Oracle Publishing','November December 2013','Engineering as a Service','David A. Kelly');
-
-
-
+```
 The OE.Catalog table gets created and a row of data gets added.
 
-
-
-
-
-
-
-Query the OE.CATALOG table.
-
-
-
+- Query the OE.CATALOG table.
+```
 SELECT * FROM OE.CATALOG;
-
-
-
+```
 The single row of data added gets listed.
 
-
-
-
-
-Exiting the Interactive Shell
-
+- Exiting the Interactive Shell
 
 To logout from SQL*Plus command run the “exit” command and to exit the “oracle” user run the “exit” command and to exit the interactive terminal run the “exit” command also.
 
+So, we used Kubernetes to create and orchestrate an Oracle Database image based Pod cluster. We discussed both the imperative and declarative approaches to create and manage a cluster. We scaled the cluster and also used a Docker container to log in to SQL*Plus and create a database table.
 
-
-
-
-
-
-
-
-In this tutorial we used Kubernetes to create and orchestrate an Oracle Database image based Pod cluster. We discussed both the imperative and declarative approaches to create and manage a cluster. We scaled the cluster and also used a Docker container to log in to SQL*Plus and create a database table.
+Joy!
