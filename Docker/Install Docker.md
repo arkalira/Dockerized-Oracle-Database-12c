@@ -1,7 +1,7 @@
 # Install Docker in Debian 9
 ## Update and install software
 ```
-apt-get install -y vim mc uml-utilities ntp qemu-guest-agent \
+apt update && apt install -y vim mc uml-utilities ntp qemu-guest-agent \
 htop sudo curl git-core etckeeper molly-guard apt-transport-https ca-certificates \
 bridge-utils gettext-base jq -y < /dev/null
 ```
