@@ -8,7 +8,7 @@ https://hub.docker.com/r/sath89/oracle-12c/
 - Create an Oracle Database cluster consisting of 2 replicas with container port set as 1521.
 
 ```
-kubectl run oradb --image=sath89/oracle-xe-11g --replicas=2 --port=1521
+kubectl run oradb --image=sath89/oracle-12c --replicas=2 --port=1521
 ```
 
 A replication controller called oradb gets created and a **selector (run=oradb)** to select Pods that comprise the replication controller replicas, and the number of replicas (2) get listed.
@@ -123,379 +123,203 @@ kubectl get services
 
 ## Creating an Oracle DB Cluster Declaratively (with configuration files)
 
-Next, create a cluster running Oracle Database declaratively using definition files for a Pod, replication controller, and service. Either the YAML or the JSON format could be used for the definition files; we have used the YAML format. Create definition files oradb-rc.yaml, oradb-service.yaml, and oradb.yaml as listed.
-
+Create definition files oradb-rc.yaml, oradb-service.yaml, and oradb.yaml as listed.
 
 - Creating a Pod
 
+oradb.yaml
 
-In this section we shall use the definition file called oradb.yaml. The Pod definition file defines a Pod named “oradb” with a label setting name: “oradb”, which translates to Pod label name=oradb. The container image is set as “sath89/oracle-xe-11g” and the container port is set as 1521.
+The Pod definition file defines a Pod named “oradb” with a label setting name: “oradb”
+which translates to Pod label name=oradb. The container image is set as “sath89/oracle-12c” and the container port is set as 1521.
 
-
-
+```
 apiVersion: v1
-
 kind: Pod
-
 metadata:
-
 name: “oradb”
-
 labels:
-
 name: “oradb”
-
 spec:
-
 containers:
-
 -
-
-image: “sath89/oracle-xe-11g”
-
+image: “sath89/oracle-12c”
 name: “oradb”
-
 ports:
-
 -
-
 containerPort: 1521
-
 restartPolicy: Always
-
-
+```
 
 The kubectl create command is used to create a Pod from the definition file oradb.yaml.
 
-
-
+```
 kubectl create -f oradb.yaml --validate
-
-
+```
 
 An output of “pods/oradb” indicates that the oradb Pod gets created.
 
+List the running Pods with the following command.
 
-
-
-
-
-
-Subsequently list the running Pods with the following command.
-
-
-
+```
 kubectl get pods
+```
 
+The single Pod oradb gets listed. The preceding command may have to be run multiple times to list the Pod as
 
-
-The single Pod oradb gets listed. The preceding command may have to be run multiple times to list the Pod as STATUS->Running and READY->1/1.
-
-
-
-
-
-
+- STATUS->Running
+- READY->1/1.
 
 Describe the Pod.
 
-
-
+```
 kubectl describe pod oradb
-
-
+```
 
 The Pod description gets listed.
 
+### Creating a Service
 
+ The service definition file specifies a port to expose the service at, a label for the service and a selector to match the Pods to be managed by the service. The selector setting of app: ”oradb” translates to service selector app=oradb. Copy the following listing to the oradb-service.yaml file.
 
-
-
-
-
-Creating a Service
-
-
-Next, create a service for cluster declaratively. The service definition file specifies a port to expose the service at, a label for the service and a selector to match the Pods to be managed by the service. The selector setting of app: ”oradb” translates to service selector app=oradb. Copy the following listing to the oradb-service.yaml file.
-
-
-
+```
 apiVersion: v1
-
 kind: Service
-
 metadata:
-
 name: "oradb"
-
 labels:
-
 app: "oradb"
-
 spec:
-
 ports:
-
 -
-
 port: 1521
-
 selector:
-
 app: "oradb"
-
-
+```
 
 Run the kubectl create command to create a service.
 
-
-
+```
 kubectl create -f oradb-service.yaml
-
-
+```
 
 The oradb service gets created. Subsequently list the services.
 
-
-
+```
 kubectl get services
-
-
+```
 
 The oradb service gets listed.
 
-
-
-
-
-
-
 Describe the oradb service.
-
-
-
+```
 kubectl describe svc oradb
+```
+
+The service description does not include any service endpoints because the service selector does not match the label on the Pod already running.
+
+The service selector app=oradb has to match a Pod label for the service to be able to manage the Pod.
 
 
+- Creating a Replication Controller
 
-The service description does not include any service endpoints because the service selector does not match the label on the Pod already running. The service selector app=oradb has to match a Pod label for the service to be able to manage the Pod.
+Next, we shall create a replication controller with a matching label. The replication controller definition file called oradb-rc.yaml defines a replication controller. **For the replication controller to manage the Pods defined in the spec field the key:value expression of the selector in the replication controller has to match a label in the Pod template mapping.** The selector defaults to the same setting as the spec->template->metadata->labels. The template->spec->containers mapping defines the containers in the Pod with only the Oracle Database container "sath89/oracle-12c" defined.
 
-
-
-
-
-
-
-Creating a Replication Controller
-
-
-Next, we shall create a replication controller with a matching label. The replication controller definition file called oradb-rc.yaml defines a replication controller. For the replication controller to manage the Pods defined in the spec field the key:value expression of the selector in the replication controller has to match a label in the Pod template mapping. The selector defaults to the same setting as the spec->template->metadata->labels. The template->spec->containers mapping defines the containers in the Pod with only the Oracle Database container "sath89/oracle-xe-11g" defined.
-
-
-
+```
 apiVersion: v1
-
 kind: ReplicationController
-
 metadata:
-
 name: "oradb"
-
 labels:
-
 app: "oradb"
-
 spec:
-
 replicas: 2
-
 template:
-
 metadata:
-
 labels:
-
 app: "oradb"
-
 spec:
-
 containers:
-
 -
-
-image: "sath89/oracle-xe-11g"
-
+image: "sath89/oracle-12c"
 name: "oradb"
-
-
+```
 
 Next, run the kubectl create command to create a replication controller from the definition file oradb-rc.yaml.
 
-
-
+```
 kubectl create -f oradb-rc.yaml
-
-
+```
 
 The replication controller gets created. List the replication controller.
-
-
-
+```
 kubectl get rc
-
-
-
+```
 The oradb replication controller gets created.
-
-
-
-
-
-
-
 List the Pods created by the replication controller.
 
-
-
+```
 kubectl get pods
-
-
+```
 
 Three Oracle Database Pods get listed. Because the Pod oradb, which is started using the Pod definition file oradb.yaml does not include a label that matches the selector in the replication controller, two new replicas are started by the replication controller.
 
-
-
-
-
-
-
 Describe the service oradb with the following command.
-
-
-
+```
 kubectl describe svc oradb
-
-
-
+```
 Service description includes name, namespace,labels,selector,type,IP, and two service endpoints.
 
-
-
-
-
-
-
-Scaling the Database
-
+- Scaling the Database
 
 Next, we shall scale the cluster from 2 to 3 Pods. The kubectl scale command with replication controller is used to scale the number of Pods.
-
-
-
+```
 kubectl scale rc oradb --replicas=3
-
-
+```
 
 The Pod replicas get scaled. Subsequently list the Pods.
-
-
-
+``
 kubectl get pods
-
-
-
+```
 Three replicas of the Pod get listed. The preceding command may have to be run multiple times if required, to list the new Pod replica as running and ready.
 
-
-
-
-
-
-
 Describe the service again.
-
-
-
+```
 kubectl describe svc oradb
-
-
-
+```
 Three endpoints should get listed in addition to a single IP address.
 
 
-
-
-
-
-
-
-
-Finding Pod Nodes
-
+- Finding Pod Nodes
 
 Previously we listed the Pods. As we are running a multi-node cluster it may be of interest to find which Pod is running on which node. To find pod->node allocation run the following command.
 
-
-
+```
 kubectl get pods –o wide
-
-
+```
 
 The Pods get listed with an additional column called NODE in the result for the node on which the pod is running.
 
+- Starting the Interactive Shell
 
+Next, we shall **start an interactive tty (shell) to connect to the software**, which is Oracle Database, running in a Docker container. A remote shell to a container may either be started with the **oc rsh <pod> command or docker exec -it <container> bash command**. We shall use the latter command. List the Docker containes.
 
-
-
-
-
-Starting the Interactive Shell
-
-
-
-Next, we shall start an interactive tty (shell) to connect to the software, which is Oracle Database, running in a Docker container. A remote shell to a container may either be started with the oc rsh <pod> command or docker exec -it <container> bash command. We shall use the latter command. List the Docker containes.
-
-
-
+```
 sudo docker ps
+```
 
+Docker containers listed include those created from the sath89/oracle-12c Docker image.
 
+Copy the container id for one of the Docker containers for the sath89/oracle-12c image and start a bash shell.
 
-Docker containers listed include those created from the sath89/oracle-xe-11g Docker image.
-
-
-
-
-
-
-
-Copy the container id for one of the Docker containers for the sath89/oracle-xe-11g image and start a bash shell.
-
-
-
+```
 sudo docker exec -it c53ed6fcddf3 bash
+```
 
+A bash shell gets started. Run the **su –l oracle** command to make the user as “oracle”.
 
+Start SQL*Plus with the **sqlplus /nolog** command. The /nolog option does not establish an initial connection with the database.
 
-A bash shell gets started. Run the su –l oracle command to make the user as “oracle”.
-
-
-
-
-
-
-
-Start SQL*Plus with the sqlplus /nolog command. The /nolog option does not establish an initial connection with the database.
-
-
-
-
-
-
-
-
-
-Connecting to Database
+## Connecting to Database
 
 
 Run the following command to connect with Oracle database instance as user SYS role SYSDBA.
