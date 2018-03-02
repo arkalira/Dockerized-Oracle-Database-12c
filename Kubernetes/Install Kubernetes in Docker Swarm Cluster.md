@@ -78,6 +78,8 @@ kubeadm init --pod-network-cidr=10.244.0.0/16
 ------
 - Message after initialization:
 <-- Just Read it -->
+
+```
 Your Kubernetes master has initialized successfully!
 
 To start using your cluster, you need to run the following as a /**regular user**/:
@@ -94,6 +96,7 @@ Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
 You can now join any number of machines by running the following on each node /**as root**/:
 
   kubeadm join --token 0f538e.ffDDFFE11169121 172.31.125.244:6443 --discovery-token-ca-cert-hash sha256:e371c7-SUPER-TOKEN-OF-CLUSTER-3c7bd3056adf8f442
+```
 
 - End of initialization message
 ----
@@ -128,7 +131,7 @@ apt-get install -y kubelet kubeadm kubectl
   kubeadm join --token 0f538e.ffDDFFEbc11169121 IP.ADDR.OF.NODE:6443 --discovery-token-ca-cert-hash sha256:e371c7-SUPER-TOKEN-OF-CLUSTER-3c7bd3056adf8f442
 ```
 
-#### Check STATUS of cluster in the Kube Master
+- Check STATUS of cluster in the Kube Master
 
 ```
 kubectl get nodes
