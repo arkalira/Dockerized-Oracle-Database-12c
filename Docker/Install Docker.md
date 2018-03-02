@@ -1,5 +1,5 @@
-# Install Docker in two servers
-## Update & Upgrade
+# Install Docker in Debian 9 servers
+## Update System
 ```
 apt-get install -y vim mc uml-utilities ntp qemu-guest-agent \
 htop sudo curl git-core etckeeper molly-guard apt-transport-https ca-certificates \
@@ -65,7 +65,7 @@ echo "sysdig-probe" >> /etc/modules-load.d/modules.conf
 modprobe sysdig-probe
 ```
 
-## Instalamos en engine
+## Instalamos el engine
 
 ```
 apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
