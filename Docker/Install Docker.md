@@ -50,10 +50,8 @@ EOL
 
 ```
 
-## Install software
-### Docker
-
-## sysdig para monitorización
+## Install Docker
+### Sysdig para monitorización
 
 ```
 curl -s https://s3.amazonaws.com/download.draios.com/DRAIOS-GPG-KEY.public | apt-key add -
@@ -65,10 +63,50 @@ echo "sysdig-probe" >> /etc/modules-load.d/modules.conf
 modprobe sysdig-probe
 ```
 
-## Instalamos el engine
+### Instalamos el engine
 
 ```
 apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 echo "deb https://apt.dockerproject.org/repo debian-jessie main" > /etc/apt/sources.list.d/docker.list
 apt-get update && apt-get install -y docker-engine
+```
+
+### Cluster docker
+
+-- Si tenemos varios nodos, creamos cluster.
+
+#### En master01
+#### Creamos el cluster en master01
+
+```
+docker swarm init --advertise-addr IP.ADDR.OF.MASTER01
+docker swarm  join-token -q  manager
+```
+#### Anotamos token de manager
+
+```
+	Swarm initialized: current node (q5lwwzmgiysf6p7710gdlv09o) is now a manager.
+	To add a worker to this swarm, run the following command:
+
+	    docker swarm join \
+	    --token SWMTKN-1-supertoken-of-cluster-swarm \
+	    IP.ADDR.OF.MASTER01:2377
+
+	To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+```
+
+#### Unimos como managers el resto de nodos
+
+```
+docker swarm join \
+    --token $TOKEN_DE_MANAGER! \
+    IP.ADDR.OF.MASTER01:2377
+```
+
+#### Preparamos el kernel
+
+```
+sed -ri s/quiet/quiet\ cgroup_enable\=memory\ swapaccount\=1/g /etc/default/grub
+update-grub
+reboot
 ```
